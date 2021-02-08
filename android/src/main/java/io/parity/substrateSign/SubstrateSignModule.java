@@ -136,7 +136,7 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void function substrateAddressEd25519(String seed, int prefix, Promise promise) {
+    public void substrateAddressEd25519(String seed, int prefix, Promise promise) {
         try {
             promise.resolve(substrateBrainwalletAddressEd25519(seed, prefix));
         } catch (Exception e) {
