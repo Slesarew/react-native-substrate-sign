@@ -136,11 +136,30 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void function substrateAddressEd25519(String seed, int prefix, Promise promise) {
+        try {
+            promise.resolve(substrateBrainwalletAddressEd25519(seed, prefix));
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate address Ed25519", e);
+        }
+    }
+
+
+    @ReactMethod
     public void substrateSign(String seed, String message, Promise promise) {
         try {
             promise.resolve(substrateBrainwalletSign(seed, message));
         } catch (Exception e) {
             rejectWithException(promise, "substrate sign", e);
+        }
+    }
+
+    @ReactMethod
+    public void substrateSignEd25519(String seed, String message, Promise promise) {
+        try {
+            promise.resolve(substrateBrainwalletSignEd25519(seed, message));
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate sign Ed25519", e);
         }
     }
 
@@ -198,6 +217,16 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void substrateSignWithRefEd25519(double seed_ref, String suriSuffix, String message, Promise promise) {
+        try {
+            String s = ethkeySubstrateBrainwalletSignWithRefEd25519(Double.doubleToRawLongBits(seed_ref), suriSuffix, message);
+            promise.resolve(s);
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate sign with ref Ed25519", e);
+        }
+    }
+
+    @ReactMethod
     public void brainWalletAddressWithRef(double seedRef, Promise promise) {
         try {
             String s = ethkeyBrainWalletAddressWithRef(Double.doubleToRawLongBits(seedRef));
@@ -214,6 +243,16 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
             promise.resolve(substrateAddress);
         } catch (Exception e) {
             rejectWithException(promise, "substrate address with ref", e);
+        }
+    }
+
+    @ReactMethod
+    public void substrateAddressWithRefEd25519(double seedRef, String suriSuffix, int prefix, Promise promise) {
+        try {
+            String substrateAddress = ethkeySubstrateWalletAddressWithRefEd25519(Double.doubleToRawLongBits(seedRef), suriSuffix, prefix);
+            promise.resolve(substrateAddress);
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate address with ref Ed25519", e);
         }
     }
 

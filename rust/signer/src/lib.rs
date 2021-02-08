@@ -24,6 +24,7 @@ use rlp::decode_list;
 use rustc_hex::{FromHex, ToHex};
 use tiny_keccak::keccak256 as keccak;
 use tiny_keccak::Keccak;
+//use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer as _, Verifier as _};
 
 use eth::{KeyPair, PhraseKind};
 use result::{Error, Result};
@@ -32,6 +33,7 @@ mod eth;
 mod export;
 mod result;
 mod sr25519;
+mod ed25519;
 
 const CRYPTO_ITERATIONS: u32 = 10240;
 
@@ -232,6 +234,30 @@ export! {
 		Ok(signature.to_hex())
 	}
 
+    	@Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletAddressEd25519
+	fn substrate_brainwallet_address_ed25519(
+		suri: &str,
+		prefix: u8
+	) -> crate::Result<String> {
+		let keypair = ed25519::KeyPair::from_suri(suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		Ok(keypair.ss58_address(prefix))
+	}
+
+	@Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletSignEd25519
+	fn substrate_brainwallet_sign_ed25519(
+		suri: &str,
+		message: &str
+	) -> crate::Result<String> {
+		let keypair = ed25519::KeyPair::from_suri(suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		let message: Vec<u8> = message.from_hex()
+			.map_err(|e| crate::Error::FromHex(e))?;
+		let signature = keypair.sign(&message);
+		Ok(signature.to_hex())
+	}
+
+
 	@Java_io_parity_substrateSign_SubstrateSignModule_schnorrkelVerify
 	fn schnorrkel_verify(
 		suri: &str,
@@ -298,6 +324,25 @@ export! {
 		Ok(signature.to_hex())
 	}
 
+    	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateBrainwalletSignWithRefEd25519
+    	fn substrate_brainwallet_sign_with_ref_ed25519(
+		seed_ref: i64,
+		suri_suffix: &str,
+		message: &str
+	) -> crate::Result<String> {
+		let seed = unsafe { Box::from_raw(seed_ref  as *mut String) };
+		let suri = format!("{}{}", &seed, suri_suffix);
+		let keypair = ed25519::KeyPair::from_suri(&suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		let message: Vec<u8> = message.from_hex()
+			.map_err(|e| crate::Error::FromHex(e))?;
+		let signature = keypair.sign(&message);
+		// so that the reference remains valid
+		let _ = Box::into_raw(seed) as i64;
+		Ok(signature.to_hex())
+	}
+
+
 	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateWalletAddressWithRef
 	fn substrate_address_with_ref(
 		seed_ref: i64,
@@ -312,6 +357,20 @@ export! {
 		let _ = Box::into_raw(seed) as i64;
 		Ok(keypair.ss58_address(prefix))
 	}
+
+    //TODO this is ugly and non-ideomatic now, should probably go through enums like in substrate code
+	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateWalletAddressWithRefEd25519
+    fn substrate_address_with_ref_ed25519(
+        seed_ref: i64,
+        suri_suffix: &str,
+        prefix: u8
+    ) -> crate::Result<String> {
+        let seed = unsafe{ Box::from_raw(seed_ref as *mut String) };
+        let suri = format!("{}{}", &seed, suri_suffix);
+        let keypair = ed25519::KeyPair::from_suri(&suri).ok_or(crate::Error::KeyPairIsNone)?;
+        let _ = Box::into_raw(seed) as i64;
+        Ok(keypair.ss58_address(prefix))
+    }
 
 	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeyBrainWalletAddressWithRef
 	fn brain_wallet_address_with_ref(
