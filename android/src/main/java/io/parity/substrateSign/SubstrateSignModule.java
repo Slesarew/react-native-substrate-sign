@@ -290,14 +290,19 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     private static native String ethkeyQrCode(String data);
     private static native String ethkeyQrCodeHex(String data);
     private static native String substrateBrainwalletAddress(String seed, int prefix);
+    private static native String substrateBrainwalletAddressEd25519(String seed, int prefix);
     private static native String substrateBrainwalletSign(String seed, String message);
+    private static native String substrateBrainwalletSignEd25519(String seed, String message);
     private static native boolean schnorrkelVerify(String seed, String message, String signature);
     private static native long ethkeyDecryptDataRef(String data, String password);
     private static native void ethkeyDestroyDataRef(long data_ref);
     private static native String ethkeyBrainwalletSignWithRef(long seed_ref, String message);
+    private static native String ethkeyBrainWalletAddressWithRef(long seedRef);
     private static native String ethkeySubstrateBrainwalletSignWithRef(long seed_ref, String suriSuffix, String message);
     private static native String ethkeySubstrateWalletAddressWithRef(long seedRef, String suriSuffix, int prefix);
-    private static native String ethkeyBrainWalletAddressWithRef(long seedRef);
+    private static native String ethkeySubstrateBrainwalletSignWithRefEd25519(long seed_ref, String suriSuffix, String message);
+    private static native String ethkeySubstrateWalletAddressWithRefEd25519(long seedRef, String suriSuffix, int prefix);
     private static native String ethkeySubstrateMiniSecretKey(String suri);
     private static native String ethkeySubstrateMiniSecretKeyWithRef(long seedRef, String suriSuffix);
+
 }

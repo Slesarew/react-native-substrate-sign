@@ -16,6 +16,4 @@ pub enum Error {
 	Blockies(blockies::Error),
 	#[error("Error rendering QR code: {0:?}")]
 	Pixelate(pixelate::Error),
-    #[error("Soft key is not supported for Ed25519")]
-    SoftKeyUnsupported,
 }
