@@ -217,6 +217,31 @@ class SubstrateSign: NSObject {
     })
   }
 
+  @objc func substrateAddressEcdsa(_ seed: String, prefix: UInt32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+    handle_error(
+      resolve: resolve,
+      reject: reject,
+      get_result: { substrate_brainwallet_address_ecdsa($0, seed, prefix) },
+      success: { (res: Optional<UnsafePointer<CChar>>) -> String in
+        let val = String(cString: res!)
+        signer_destroy_string(res!)
+        return val
+    })
+  }
+
+  @objc func substrateSignEcdsa(_ seed: String, message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+    handle_error(
+      resolve: resolve,
+      reject: reject,
+      get_result: { substrate_brainwallet_sign_ecdsa($0, seed, message) },
+      success: { (res: Optional<UnsafePointer<CChar>>) -> String in
+        let val = String(cString: res!)
+        signer_destroy_string(res!)
+        return val
+    })
+  }
+
+
   @objc func schnorrkelVerify(_ seed: String, message: String, signature: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
     handle_error(
       resolve: resolve,
@@ -280,6 +305,18 @@ class SubstrateSign: NSObject {
     })
   }
 
+  @objc func substrateSignWithRefEcdsa(_ seed_ref: Int64, suri_suffix: String, message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+    handle_error(
+      resolve: resolve,
+      reject: reject,
+      get_result: { substrate_brainwallet_sign_with_ref_ecdsa($0, seed_ref, suri_suffix, message) },
+      success: { (res: Optional<UnsafePointer<CChar>>) -> String in
+        let val = String(cString: res!)
+        signer_destroy_string(res!)
+        return val
+    })
+  }
+
   @objc func brainWalletAddressWithRef(_ seed_ref: Int64, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
     handle_error(
       resolve: resolve,
@@ -309,6 +346,18 @@ class SubstrateSign: NSObject {
       resolve: resolve,
       reject: reject,
       get_result: { substrate_address_with_ref_ed25519($0, seed_ref, suri_suffix, prefix) },
+      success: { (res: Optional<UnsafePointer<CChar>>) -> String in
+        let val = String(cString: res!)
+        signer_destroy_string(res!)
+        return val
+    })
+  }
+
+  @objc func substrateAddressWithRefEcdsa(_ seed_ref: Int64, suri_suffix: String, prefix: UInt32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
+    handle_error(
+      resolve: resolve,
+      reject: reject,
+      get_result: { substrate_address_with_ref_ecdsa($0, seed_ref, suri_suffix, prefix) },
       success: { (res: Optional<UnsafePointer<CChar>>) -> String in
         let val = String(cString: res!)
         signer_destroy_string(res!)

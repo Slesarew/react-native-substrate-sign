@@ -70,6 +70,10 @@ const char* substrate_brainwallet_address_Ed25519(struct ExternError*, const cha
 
 const char* substrate_brainwallet_sign_Ed25519(struct ExternError* err, const char* seed, const char* data);
 
+const char* substrate_brainwallet_address_Ecdsa(struct ExternError*, const char* seed, const unsigned prefix);
+
+const char* substrate_brainwallet_sign_Ecdsa(struct ExternError* err, const char* seed, const char* data);
+
 const char* schnorrkel_verify(struct ExternError*, const char* seed, const char* msg, const char* signature);
 
 int64_t decrypt_data_ref(struct ExternError*, const char* encrypted_data, const char* password);
@@ -85,6 +89,10 @@ const char* substrate_address_with_ref(struct ExternError*, int64_t seed_ref, co
 const char* substrate_brainwallet_sign_with_ref_Ed25519(struct ExternError*, int64_t seed_ref, const char* suri_suffix, const char* data);
 
 const char* substrate_address_with_ref_Ed25519(struct ExternError*, int64_t seed_ref, const char* suri_suffix, const unsigned prefix);
+
+const char* substrate_brainwallet_sign_with_ref_Ecdsa(struct ExternError*, int64_t seed_ref, const char* suri_suffix, const char* data);
+
+const char* substrate_address_with_ref_Ecdsa(struct ExternError*, int64_t seed_ref, const char* suri_suffix, const unsigned prefix);
 
 const char* brain_wallet_address_with_ref(struct ExternError*, int64_t seed_ref);
 

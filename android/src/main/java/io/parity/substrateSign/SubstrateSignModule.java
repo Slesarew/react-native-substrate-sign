@@ -144,6 +144,14 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void substrateAddressEcdsa(String seed, int prefix, Promise promise) {
+        try {
+            promise.resolve(substrateBrainwalletAddressEcdsa(seed, prefix));
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate address Ecdsa", e);
+        }
+    }
 
     @ReactMethod
     public void substrateSign(String seed, String message, Promise promise) {
@@ -160,6 +168,15 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
             promise.resolve(substrateBrainwalletSignEd25519(seed, message));
         } catch (Exception e) {
             rejectWithException(promise, "substrate sign Ed25519", e);
+        }
+    }
+
+    @ReactMethod
+    public void substrateSignEcdsa(String seed, String message, Promise promise) {
+        try {
+            promise.resolve(substrateBrainwalletSignEcdsa(seed, message));
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate sign Ecdsa", e);
         }
     }
 
@@ -227,6 +244,16 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void substrateSignWithRefEcdsa(double seed_ref, String suriSuffix, String message, Promise promise) {
+        try {
+            String s = ethkeySubstrateBrainwalletSignWithRefEcdsa(Double.doubleToRawLongBits(seed_ref), suriSuffix, message);
+            promise.resolve(s);
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate sign with ref Ecdsa", e);
+        }
+    }
+
+    @ReactMethod
     public void brainWalletAddressWithRef(double seedRef, Promise promise) {
         try {
             String s = ethkeyBrainWalletAddressWithRef(Double.doubleToRawLongBits(seedRef));
@@ -253,6 +280,16 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
             promise.resolve(substrateAddress);
         } catch (Exception e) {
             rejectWithException(promise, "substrate address with ref Ed25519", e);
+        }
+    }
+
+    @ReactMethod
+    public void substrateAddressWithRefEcdsa(double seedRef, String suriSuffix, int prefix, Promise promise) {
+        try {
+            String substrateAddress = ethkeySubstrateWalletAddressWithRefEcdsa(Double.doubleToRawLongBits(seedRef), suriSuffix, prefix);
+            promise.resolve(substrateAddress);
+        } catch (Exception e) {
+            rejectWithException(promise, "substrate address with ref Ecdsa", e);
         }
     }
 
@@ -291,8 +328,10 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     private static native String ethkeyQrCodeHex(String data);
     private static native String substrateBrainwalletAddress(String seed, int prefix);
     private static native String substrateBrainwalletAddressEd25519(String seed, int prefix);
+    private static native String substrateBrainwalletAddressEcdsa(String seed, int prefix);
     private static native String substrateBrainwalletSign(String seed, String message);
     private static native String substrateBrainwalletSignEd25519(String seed, String message);
+    private static native String substrateBrainwalletSignEcdsa(String seed, String message);
     private static native boolean schnorrkelVerify(String seed, String message, String signature);
     private static native long ethkeyDecryptDataRef(String data, String password);
     private static native void ethkeyDestroyDataRef(long data_ref);
@@ -301,7 +340,9 @@ public class SubstrateSignModule extends ReactContextBaseJavaModule {
     private static native String ethkeySubstrateBrainwalletSignWithRef(long seed_ref, String suriSuffix, String message);
     private static native String ethkeySubstrateWalletAddressWithRef(long seedRef, String suriSuffix, int prefix);
     private static native String ethkeySubstrateBrainwalletSignWithRefEd25519(long seed_ref, String suriSuffix, String message);
+    private static native String ethkeySubstrateBrainwalletSignWithRefEcdsa(long seed_ref, String suriSuffix, String message);
     private static native String ethkeySubstrateWalletAddressWithRefEd25519(long seedRef, String suriSuffix, int prefix);
+    private static native String ethkeySubstrateWalletAddressWithRefEcdsa(long seedRef, String suriSuffix, int prefix);
     private static native String ethkeySubstrateMiniSecretKey(String suri);
     private static native String ethkeySubstrateMiniSecretKeyWithRef(long seedRef, String suriSuffix);
 

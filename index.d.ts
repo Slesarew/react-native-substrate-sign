@@ -30,9 +30,13 @@ declare module 'react-native-substrate-sign' {
 
 	export function substrateAddressEd25519(seed: string, prefix: number): Promise<string>;
 
+	export function substrateAddressEcdsa(seed: string, prefix: number): Promise<string>;
+
 	export function substrateSign(seed: string, message: string): Promise<string>;
 
 	export function substrateSignEd25519(seed: string, message: string): Promise<string>;
+
+	export function substrateSignEcdsa(seed: string, message: string): Promise<string>;
 
 	export function schnorrkelVerify(seed: string, message: string, signature: string): Promise<boolean>;
 
@@ -46,11 +50,15 @@ declare module 'react-native-substrate-sign' {
 
 	export function substrateSignWithRefEd25519(dataRef: number, suriSuffix: string, message: string): Promise<string>;
 
+	export function substrateSignWithRefEcdsa(dataRef: number, suriSuffix: string, message: string): Promise<string>;
+
 	export function brainWalletAddressWithRef(dataRef: number): Promise<string>;
 
 	export function substrateAddressWithRef(dataRef: number, suriSuffix: string, prefix: number): Promise<string>;
 
 	export function substrateAddressWithRefEd25519(dataRef: number, suriSuffix: string, prefix: number): Promise<string>;
+
+	export function substrateAddressWithRefEcdsa(dataRef: number, suriSuffix: string, prefix: number): Promise<string>;
 
 	export function substrateSecret(suri: string): Promise<string>;
 
