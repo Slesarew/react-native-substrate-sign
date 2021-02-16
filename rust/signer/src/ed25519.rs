@@ -26,47 +26,6 @@ impl KeyPair {
         let public = PublicKey::from(&secret);
 		Some(KeyPair(Keypair{secret, public}))
 	}
-/*
-	fn derive_secret_key(&self, path: impl Iterator<Item=DeriveJunction>) -> Option<MiniSecretKey> {
-		let mut result: SecretKey = self.0.secret.clone();
-		let mut path_peekable = path.peekable();
-		let mut derived_result: Option<MiniSecretKey> = None;
-		while let Some(derive_junction) = path_peekable.next() {
-			if path_peekable.peek().is_some() {
-				result = match derive_junction {
-	        		DeriveJunction::Soft(cc) => return crate::Error::SoftKeyUnsupported,
-    		    	DeriveJunction::Hard(cc) => derive_hard_junction(&acc, cc),
-				}
-			}
-			let last_chain_code = derive_junction.unwrap_inner();
-			let (derived_mini_secret_key, _) = result.hard_derive_mini_secret_key(Some(ChainCode(last_chain_code)), b"");
-			derived_result = Some(derived_mini_secret_key);
-		}
-
-		derived_result
-	}
-*//*
-	pub fn get_derived_secret(suri: &str) -> Option<[u8; MINI_SECRET_KEY_LENGTH]> {
-		lazy_static! {
-			static ref RE_SURI: Regex = {
-				Regex::new(r"^(?P<phrase>\w+( \w+)*)?(?P<path>(//?[^/]+)*)(///(?P<password>.*))?$")
-					.expect("constructed from known-good static value; qed")
-			};
-			static ref RE_JUNCTION: Regex =
-				Regex::new(r"/(/?[^/]+)").expect("constructed from known-good static value; qed");
-		}
-		let cap = RE_SURI.captures(suri)?;
-		let paths = RE_JUNCTION
-			.captures_iter(&cap["path"])
-			.map(|j| DeriveJunction::from(&j[1]));
-		let pair = Self::from_bip39_phrase(
-			cap.name("phrase").map(|p| p.as_str())?,
-			cap.name("password").map(|p| p.as_str()),
-		)?;
-		let mini_secret_key = pair.derive_secret_key(paths)?;
-		Some(*mini_secret_key.as_bytes())
-	}
-*/
 
 	// Should match implementation at https://github.com/paritytech/substrate/blob/master/core/primitives/src/crypto.rs#L653-L682
 	pub fn from_suri(suri: &str) -> Option<KeyPair> {
