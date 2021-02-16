@@ -1,6 +1,3 @@
-// Originally developed in https://github.com/polkadot-js/wasm
-// forked at commit 141a067b853b22548777a2da127bf63651c353a7
-
 //use std::convert::TryFrom;
 use base58::ToBase58;
 use bip39::{Language, Mnemonic};
@@ -213,89 +210,9 @@ fn ss58hash(data: &[u8]) -> blake2_rfc::blake2b::Blake2bResult {
 	context.update(data);
 	context.finalize()
 }
+
+//TODO: tests
 /*
-/// Keypair helper function.
-fn create_from_pair(pair: &[u8]) -> Keypair {
-	match Keypair::from_bytes(pair) {
-		Ok(pair) => return pair,
-		Err(_) => panic!("Provided pair is invalid.")
-	}
-}
-
-/// Keypair helper function
-fn create_from_parts(pubkey: &[u8], seckey: &[u8]) -> Keypair {
-	let mut pair = vec![];
-
-	pair.extend_from_slice(seckey);
-	pair.extend_from_slice(pubkey);
-
-	create_from_pair(&pair)
-}
-
-/// Keypair helper function.
-fn create_from_seed(seed: &[u8]) -> Keypair {
-	let seckey = SecretKey::from_bytes(seed).unwrap();
-	let pubkey: PublicKey = (&seckey).into();
-
-	create_from_parts(pubkey.as_bytes(), seed)
-}
-
-/// PublicKey helper
-fn create_public(pubkey: &[u8]) -> PublicKey {
-	match PublicKey::from_bytes(pubkey) {
-		Ok(pubkey) => return pubkey,
-		Err(_) => panic!("Provided public key is invalid.")
-	}
-}
-
-/// Generate a key pair.
-///
-/// * seed: UIntArray with 32 element
-///
-/// returned vector is the concatenation of first the private key (64 bytes)
-/// followed by the public key (32) bytes.
-#[wasm_bindgen]
-pub fn ext_ed_from_seed(seed: &[u8]) -> Vec<u8> {
-	create_from_seed(seed)
-		.to_bytes()
-		.to_vec()
-}
-
-/// Sign a message
-///
-/// The combination of both public and private key must be provided.
-/// This is effectively equivalent to a keypair.
-///
-/// * pubkey: UIntArray with 32 element
-/// * private: UIntArray with 64 element
-/// * message: Arbitrary length UIntArray
-///
-/// * returned vector is the signature consisting of 64 bytes.
-#[wasm_bindgen]
-pub fn ext_ed_sign(pubkey: &[u8], seckey: &[u8], message: &[u8]) -> Vec<u8> {
-	create_from_parts(pubkey, seckey)
-		.sign(message)
-		.to_bytes()
-		.to_vec()
-}
-
-/// Verify a message and its corresponding against a public key;
-///
-/// * signature: UIntArray with 64 element
-/// * message: Arbitrary length UIntArray
-/// * pubkey: UIntArray with 32 element
-#[wasm_bindgen]
-pub fn ext_ed_verify(signature: &[u8], message: &[u8], pubkey: &[u8]) -> bool {
-	let signature = match Signature::try_from(signature) {
-		Ok(signature) => signature,
-		Err(_) => return false
-	};
-
-	create_public(pubkey)
-		.verify(message, &signature)
-		.is_ok()
-}
-
 #[cfg(test)]
 pub mod tests {
 	extern crate rand;
