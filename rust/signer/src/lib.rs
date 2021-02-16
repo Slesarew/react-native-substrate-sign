@@ -34,6 +34,7 @@ mod export;
 mod result;
 mod sr25519;
 mod ed25519;
+mod ecdsa;
 
 const CRYPTO_ITERATIONS: u32 = 10240;
 
@@ -234,7 +235,7 @@ export! {
 		Ok(signature.to_hex())
 	}
 
-    	@Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletAddressEd25519
+    @Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletAddressEd25519
 	fn substrate_brainwallet_address_ed25519(
 		suri: &str,
 		prefix: u8
@@ -257,6 +258,28 @@ export! {
 		Ok(signature.to_hex())
 	}
 
+    @Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletAddressEcdsa
+	fn substrate_brainwallet_address_ecdsa(
+		suri: &str,
+		prefix: u8
+	) -> crate::Result<String> {
+		let keypair = ecdsa::KeyPair::from_suri(suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		Ok(keypair.ss58_address(prefix))
+	}
+
+	@Java_io_parity_substrateSign_SubstrateSignModule_substrateBrainwalletSignEcdsa
+	fn substrate_brainwallet_sign_ecdsa(
+		suri: &str,
+		message: &str
+	) -> crate::Result<String> {
+		let keypair = ecdsa::KeyPair::from_suri(suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		let message: Vec<u8> = message.from_hex()
+			.map_err(|e| crate::Error::FromHex(e))?;
+		let signature = keypair.sign(&message);
+		Ok(signature.to_hex())
+	}
 
 	@Java_io_parity_substrateSign_SubstrateSignModule_schnorrkelVerify
 	fn schnorrkel_verify(
@@ -324,8 +347,8 @@ export! {
 		Ok(signature.to_hex())
 	}
 
-    	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateBrainwalletSignWithRefEd25519
-    	fn substrate_brainwallet_sign_with_ref_ed25519(
+    @Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateBrainwalletSignWithRefEd25519
+    fn substrate_brainwallet_sign_with_ref_ed25519(
 		seed_ref: i64,
 		suri_suffix: &str,
 		message: &str
@@ -342,6 +365,23 @@ export! {
 		Ok(signature.to_hex())
 	}
 
+    @Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateBrainwalletSignWithRefEcdsa
+    fn substrate_brainwallet_sign_with_ref_ecdsa(
+		seed_ref: i64,
+		suri_suffix: &str,
+		message: &str
+	) -> crate::Result<String> {
+		let seed = unsafe { Box::from_raw(seed_ref  as *mut String) };
+		let suri = format!("{}{}", &seed, suri_suffix);
+		let keypair = ecdsa::KeyPair::from_suri(&suri)
+			.ok_or(crate::Error::KeyPairIsNone)?;
+		let message: Vec<u8> = message.from_hex()
+			.map_err(|e| crate::Error::FromHex(e))?;
+		let signature = keypair.sign(&message);
+		// so that the reference remains valid
+		let _ = Box::into_raw(seed) as i64;
+		Ok(signature.to_hex())
+	}
 
 	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateWalletAddressWithRef
 	fn substrate_address_with_ref(
@@ -368,6 +408,19 @@ export! {
         let seed = unsafe{ Box::from_raw(seed_ref as *mut String) };
         let suri = format!("{}{}", &seed, suri_suffix);
         let keypair = ed25519::KeyPair::from_suri(&suri).ok_or(crate::Error::KeyPairIsNone)?;
+        let _ = Box::into_raw(seed) as i64;
+        Ok(keypair.ss58_address(prefix))
+    }
+
+	@Java_io_parity_substrateSign_SubstrateSignModule_ethkeySubstrateWalletAddressWithRefEcdsa
+    fn substrate_address_with_ref_ecdsa(
+        seed_ref: i64,
+        suri_suffix: &str,
+        prefix: u8
+    ) -> crate::Result<String> {
+        let seed = unsafe{ Box::from_raw(seed_ref as *mut String) };
+        let suri = format!("{}{}", &seed, suri_suffix);
+        let keypair = ecdsa::KeyPair::from_suri(&suri).ok_or(crate::Error::KeyPairIsNone)?;
         let _ = Box::into_raw(seed) as i64;
         Ok(keypair.ss58_address(prefix))
     }
